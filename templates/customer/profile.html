@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Profile · HomeServe{% endblock %}
+{% block content %}
+<h2>My profile</h2>
+<form method="post" class="card" style="max-width:520px">
+  {{ csrf_input() }}
+  <label>Name</label><input name="name" value="{{ me.name }}" required>
+  <label>Mobile number</label><input value="{{ me.phone }}" disabled>
+  <label>Default service address</label><textarea name="address" rows="3">{{ me.address or '' }}</textarea>
+  <button class="btn">Save changes</button>
+</form>
+{% endblock %}

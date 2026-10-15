@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars, empty %}
+{% from "provider/_cards.html" import booking_card with context %}
+{% block title %}Dashboard · HomeServe{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h2 style="margin:0">Welcome, {{ p.name }}</h2>
+    <p class="muted" style="margin:4px 0 0">{{ p.category }} · {{ p.location.area }}, {{ p.location.district }}
+      · {% if p.available is sameas false %}<span class="badge rejected">Not taking bookings</span>{% else %}<span class="badge accepted">Available</span>{% endif %}</p></div>
+  <a class="btn light" href="{{ url_for('provider.profile') }}">Edit profile</a>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>{{ stats.pending }}</b>Pending requests</div>
+  <div class="stat"><b>{{ stats.accepted }}</b>Accepted jobs</div>
+  <div class="stat"><b>{{ stats.completed }}</b>Completed jobs</div>
+  <div class="stat"><b>₹{{ stats.earnings }}</b>Total earnings</div>
+  <div class="stat"><b>{{ p.rating_avg or '–' }}</b>Rating{% if p.rating_count %} ({{ p.rating_count }}){% endif %}</div>
+</div>
+
+<div class="row top">
+  <div>
+    <div class="row-between"><h3>New requests</h3><a href="{{ url_for('provider.requests_page', tab='pending') }}">View all →</a></div>
+    {% for b in pending %}{{ booking_card(b, url_for('provider.dashboard')) }}{% else %}{{ empty('No pending requests.') }}{% endfor %}
+  </div>
+  <div>
+    <div class="row-between"><h3>Upcoming jobs</h3><a href="{{ url_for('provider.requests_page', tab='active') }}">View all →</a></div>
+    {% for b in upcoming %}{{ booking_card(b, url_for('provider.dashboard')) }}{% else %}{{ empty('No upcoming jobs.') }}{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars %}
+{% block title %}{{ p.name }} · HomeServe{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('customer.home') }}">← Back to providers</a></p>
+<div class="card">
+  <div class="page-head" style="margin-bottom:6px">
+    <div><h2 style="margin:0 0 6px">{{ p.name }}</h2><span class="badge">{{ p.category }}</span>
+      {% if p.available is sameas false %}<span class="badge rejected">Not available</span>{% endif %}</div>
+    <div class="price-tag">₹{{ p.price_per_hour }}<small>/hour</small></div>
+  </div>
+  <p>{{ p.description or 'No description added.' }}</p>
+  <p class="meta">{{ stars(p.rating_avg, p.rating_count) }} · ✅ {{ jobs_done }} jobs completed
+    {% if p.experience_years %} · {{ p.experience_years }} years experience{% endif %}<br>
+    📞 {{ p.phone }} · 📍 {{ p.location.area }}, {{ p.location.district }}, {{ p.location.state }}</p>
+  <div id="map"></div>
+</div>
+
+{% if p.media %}
+<h3>Gallery</h3>
+<div class="card"><div class="gallery">
+  {% for m in p.media %}
+    {% if m.type == 'image' %}<img src="{{ m.url }}" alt="">{% else %}<video src="{{ m.url }}" controls></video>{% endif %}
+  {% endfor %}
+</div></div>
+{% endif %}
+
+<div class="row top" style="margin-top:20px">
+  <div class="card">
+    <h3 style="margin-top:0">Book this provider</h3>
+    {% if p.available is sameas false %}
+      <p class="muted">This provider is not taking new bookings right now.</p>
+    {% else %}
+    <form method="post" action="{{ url_for('customer.book', pid=p._id) }}">
+      {{ csrf_input() }}
+      <p class="muted" style="margin-top:0">Booking as <b>{{ me.name }}</b> · {{ me.phone }}</p>
+      <label>Service address</label>
+      <textarea name="address" rows="2" placeholder="House no., street, area" required>{{ me.address or '' }}</textarea>
+      <div class="row">
+        <div><label>Date</label><input type="date" name="date" min="{{ today }}" required></div>
+        <div><label>Hours needed</label><input type="number" name="hours" min="1" max="12" value="1" required></div>
+      </div>
+      <label>Time slot</label>
+      <select name="time_slot">{% for s in slots %}<option>{{ s }}</option>{% endfor %}</select>
+      <label>Notes for the provider (optional)</label>
+      <input name="notes" placeholder="e.g. Kitchen tap is leaking">
+      <button class="btn full">Request booking</button>
+    </form>
+    <small class="muted">The provider is notified immediately. Track the status in My Bookings.</small>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Reviews ({{ reviews | length }})</h3>
+    {% for r in reviews %}
+      <div class="review"><b>{{ r.customer_name }}</b> <span class="stars">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</span>
+        {% if r.comment %}<br>{{ r.comment }}{% endif %}<small>{{ r.created_at | ist }}</small></div>
+    {% else %}<p class="muted">No reviews yet. Reviews appear after completed jobs.</p>{% endfor %}
+  </div>
+</div>
+
+<script>
+const lat = {{ p.location.coordinates[1] }}, lng = {{ p.location.coordinates[0] }};
+const map = L.map('map').setView([lat, lng], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap'}).addTo(map);
+L.marker([lat, lng]).addTo(map).bindPopup({{ p.name | tojson }}).openPopup();
+</script>
+{% endblock %}

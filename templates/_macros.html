@@ -1,0 +1,8 @@
+{% macro stars(avg, count=None) -%}
+  {%- if count == 0 or not avg -%}<span class="muted">No ratings yet</span>
+  {%- else -%}<span class="stars">{{ '★' * (avg | round | int) }}{{ '☆' * (5 - (avg | round | int)) }}</span> <b>{{ avg }}</b>{% if count is not none %} <span class="muted">({{ count }})</span>{% endif %}{%- endif -%}
+{%- endmacro %}
+
+{% macro badge(status) -%}<span class="badge {{ status }}">{{ status | capitalize }}</span>{%- endmacro %}
+
+{% macro empty(text) -%}<div class="card empty">{{ text }}</div>{%- endmacro %}

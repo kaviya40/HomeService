@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty %}
+{% block content %}
+<h2>Notifications</h2>
+{% for n in notes %}
+  <div class="note {{ 'unread' if not n.read }}">{{ n.message }}<small>{{ n.created_at | ist }}</small></div>
+{% else %}{{ empty('No notifications yet.') }}{% endfor %}
+{% endblock %}

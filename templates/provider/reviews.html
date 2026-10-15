@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars, empty %}
+{% block title %}Reviews · HomeServe{% endblock %}
+{% block content %}
+<div class="page-head"><h2>My reviews</h2><div class="card" style="padding:10px 16px">{{ stars(p.rating_avg, p.rating_count) }}</div></div>
+{% for r in reviews %}
+  <div class="card review"><b>{{ r.customer_name }}</b> <span class="stars">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</span>
+    <br>{{ r.comment or 'No comment.' }}<small>{{ r.created_at | ist }}</small></div>
+{% else %}{{ empty('No reviews yet. Complete jobs to receive reviews.') }}{% endfor %}
+{% endblock %}

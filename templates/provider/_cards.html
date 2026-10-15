@@ -1,0 +1,26 @@
+{% from "_macros.html" import badge %}
+{% macro booking_card(b, back) %}
+<div class="card booking-card">
+  <div class="row-between">
+    <div><b style="font-size:1.1rem">{{ b.customer_name }}</b> {{ badge(b.status) }}</div>
+    <div class="amount">₹{{ b.amount }}</div>
+  </div>
+  <div class="kv">
+    <span>Phone</span><span><a href="tel:{{ b.customer_phone }}">{{ b.customer_phone }}</a></span>
+    <span>Service address</span><span>{{ b.address }}</span>
+    <span>When</span><span>{{ b.date.strftime('%d %b %Y') }} · {{ b.time_slot }}</span>
+    <span>Hours</span><span>{{ b.hours }}</span>
+    {% if b.notes %}<span>Customer notes</span><span>{{ b.notes }}</span>{% endif %}
+  </div>
+  {% if b.status == 'pending' %}
+  <div class="actions">
+    <form method="post" action="{{ url_for('provider.booking_action', bid=b._id, action='accept') }}">{{ csrf_input() }}<input type="hidden" name="back" value="{{ back }}"><button class="btn green">Accept</button></form>
+    <form method="post" action="{{ url_for('provider.booking_action', bid=b._id, action='reject') }}">{{ csrf_input() }}<input type="hidden" name="back" value="{{ back }}"><button class="btn danger">Reject</button></form>
+  </div>
+  {% elif b.status == 'accepted' %}
+  <div class="actions">
+    <form method="post" action="{{ url_for('provider.booking_action', bid=b._id, action='complete') }}">{{ csrf_input() }}<input type="hidden" name="back" value="{{ back }}"><button class="btn">Mark as completed</button></form>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}

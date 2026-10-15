@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty %}
+{% block title %}Gallery · HomeServe{% endblock %}
+{% block content %}
+<h2>My gallery</h2>
+<div class="card">
+  <p class="muted" style="margin-top:0">Customers see these photos and your video on your profile.</p>
+  <div class="gallery">
+    {% for m in p.media %}
+    <div class="g-item">
+      {% if m.type == 'image' %}<img src="{{ m.url }}" alt="">{% else %}<video src="{{ m.url }}" controls></video>{% endif %}
+      {% if m.filename %}
+      <form method="post" action="{{ url_for('provider.delete_media', filename=m.filename) }}">{{ csrf_input() }}<button class="btn danger sm">Delete</button></form>
+      {% endif %}
+    </div>
+    {% else %}{{ empty('No photos or videos yet.') }}{% endfor %}
+  </div>
+</div>
+<form method="post" enctype="multipart/form-data" class="card" style="margin-top:16px">
+  {{ csrf_input() }}
+  <h3 style="margin-top:0">Upload</h3>
+  <div class="row">
+    <div><label>Photos (select multiple)</label><input type="file" name="images" multiple accept="image/*"></div>
+    <div><label>Video (only one; a new video replaces the old)</label><input type="file" name="video" accept="video/*"></div>
+  </div>
+  <button class="btn amber">Upload</button>
+</form>
+{% endblock %}

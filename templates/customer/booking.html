@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Booking · HomeServe{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('customer.bookings') }}">← My bookings</a></p>
+<h2>Booking details</h2>
+<div class="card">
+  <div class="row-between">
+    <div><h3 style="margin:0 0 6px"><a href="{{ url_for('customer.provider_view', pid=b.provider_id) }}">{{ b.provider_name }}</a></h3><span class="badge">{{ b.category }}</span></div>
+    <span style="font-size:1.05rem">{{ badge(b.status) }}</span>
+  </div>
+  {% if b.status == 'pending' %}<p>⏳ Request sent. Waiting for the provider to accept.</p>
+  {% elif b.status == 'accepted' %}<p>✅ Accepted. The provider will visit on the booked date. Provider phone: <b>{{ p.phone if p else '—' }}</b></p>
+  {% elif b.status == 'completed' %}<p>🎉 This job is completed.</p>
+  {% elif b.status == 'rejected' %}<p>❌ The provider could not take this booking. <a href="{{ url_for('customer.home', category=b.category) }}">Choose another {{ b.category }}</a>.</p>
+  {% elif b.status == 'cancelled' %}<p>This booking was cancelled.</p>{% endif %}
+  <div class="kv">
+    <span>Date</span><span>{{ b.date.strftime('%d %b %Y') }} · {{ b.time_slot }}</span>
+    <span>Hours</span><span>{{ b.hours }}</span>
+    <span>Amount</span><span>₹{{ b.amount }}</span>
+    <span>Service address</span><span>{{ b.address }}</span>
+    {% if b.notes %}<span>Your notes</span><span>{{ b.notes }}</span>{% endif %}
+  </div>
+  {% if b.status in ['pending', 'accepted'] %}
+  <form method="post" action="{{ url_for('customer.cancel', bid=b._id) }}" onsubmit="return confirm('Cancel this booking?')">
+    {{ csrf_input() }}<button class="btn danger">Cancel booking</button></form>
+  {% endif %}
+</div>
+
+<div class="row top" style="margin-top:16px">
+  <div class="card">
+    <h3 style="margin-top:0">Progress</h3>
+    <ul class="timeline">
+      {% for t in b.timeline %}<li><b>{{ t.status | capitalize }}</b> {{ t.note }}<small>{{ t.at | ist }}</small></li>{% endfor %}
+    </ul>
+  </div>
+  {% if b.status == 'completed' %}
+  <div class="card">
+    <h3 style="margin-top:0">Your review</h3>
+    {% if review %}
+      <p><span class="stars">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</span><br>{{ review.comment or 'No comment.' }}</p>
+    {% else %}
+    <form method="post" action="{{ url_for('customer.review', bid=b._id) }}">
+      {{ csrf_input() }}
+      <label>Rating</label>
+      <select name="rating">{% for i in [5,4,3,2,1] %}<option value="{{ i }}">{{ '★' * i }} ({{ i }})</option>{% endfor %}</select>
+      <label>Comment (optional)</label>
+      <textarea name="comment" rows="3"></textarea>
+      <button class="btn">Submit review</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

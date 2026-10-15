@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Trusted home services, at your doorstep</h1>
+  <p>Plumbers, electricians, carpenters, cleaners and more. Choose how you want to use HomeServe.</p>
+</section>
+<div class="portals">
+  <div class="card portal">
+    <div class="portal-icon">👤</div>
+    <h2>I need a service</h2>
+    <p>Find verified providers near you, book a time slot, track your job and leave reviews.</p>
+    <a class="btn full" href="{{ url_for('auth.customer_login') }}">Customer Login</a>
+    <a class="btn light full" href="{{ url_for('auth.customer_register') }}">Create customer account</a>
+  </div>
+  <div class="card portal">
+    <div class="portal-icon">🛠</div>
+    <h2>I provide services</h2>
+    <p>Create your profile, receive booking requests, manage your jobs and grow your ratings.</p>
+    <a class="btn full amber" href="{{ url_for('auth.provider_login') }}">Provider Login</a>
+    <a class="btn light full" href="{{ url_for('auth.provider_register') }}">Register as provider</a>
+  </div>
+</div>
+{% endblock %}

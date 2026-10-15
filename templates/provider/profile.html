@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Profile · HomeServe{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/location_picker.js') }}" defer></script>
+{% endblock %}
+{% block content %}
+<h2>My provider profile</h2>
+<form id="pform" method="post" class="card">
+  {{ csrf_input() }}
+  <div class="row">
+    <div><label>Name / Business name</label><input name="name" value="{{ p.name }}" required></div>
+    <div><label>Mobile number (login ID)</label><input value="{{ p.phone }}" disabled></div>
+  </div>
+  <div class="row">
+    <div><label>Category</label><select name="category">{% for c in categories %}<option {{ 'selected' if c == p.category }}>{{ c }}</option>{% endfor %}</select></div>
+    <div><label>Price per hour (₹)</label><input type="number" name="price" min="0" value="{{ p.price_per_hour }}" required></div>
+    <div><label>Experience (years)</label><input type="number" name="experience" min="0" value="{{ p.experience_years or 0 }}"></div>
+  </div>
+  <label>About your service</label><textarea name="description" rows="3">{{ p.description }}</textarea>
+  <label class="check"><input type="checkbox" name="available" {{ 'checked' if p.available is not sameas false }}> I am available for new bookings</label>
+  {% include "_location_fields.html" %}
+  <button class="btn amber" style="margin-top:14px">Save changes</button>
+</form>
+
+<form method="post" action="{{ url_for('provider.delete_account') }}" class="card danger-zone"
+      onsubmit="return confirm('Delete your provider account? Active bookings will be cancelled.')">
+  {{ csrf_input() }}
+  <h4 style="margin-top:0">Danger zone</h4>
+  <p class="muted">Deleting your account removes your profile and cancels pending and accepted bookings.</p>
+  <button class="btn danger">Delete my account</button>
+</form>
+{% endblock %}

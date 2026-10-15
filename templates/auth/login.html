@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Provider' if role == 'provider' else 'Customer' }} Login · HomeServe{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-tabs">
+    <a class="{{ 'active' if role == 'customer' }}" href="{{ url_for('auth.customer_login') }}">👤 Customer</a>
+    <a class="{{ 'active amber' if role == 'provider' }}" href="{{ url_for('auth.provider_login') }}">🛠 Service Provider</a>
+  </div>
+  <form method="post" class="card auth-card">
+    {{ csrf_input() }}
+    <h2>{{ 'Provider login' if role == 'provider' else 'Customer login' }}</h2>
+    <p class="muted">{% if role == 'provider' %}Manage booking requests, your gallery and your profile.{% else %}Find and book trusted home services.{% endif %}</p>
+    <label>Mobile number</label>
+    <input name="phone" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit mobile number" required autofocus>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button class="btn full {{ 'amber' if role == 'provider' }}">Log in</button>
+    <p class="muted center">
+      {% if role == 'provider' %}New provider? <a href="{{ url_for('auth.provider_register') }}">Register your service</a>
+      {% else %}New here? <a href="{{ url_for('auth.customer_register') }}">Create a customer account</a>{% endif %}
+    </p>
+  </form>
+</div>
+{% endblock %}

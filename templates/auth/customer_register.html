@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Customer sign up · HomeServe{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <form method="post" class="card auth-card">
+    {{ csrf_input() }}
+    <h2>Create customer account</h2>
+    <p class="muted">Book services and track your requests.</p>
+    <label>Your name</label>
+    <input name="name" required autofocus>
+    <label>Mobile number</label>
+    <input name="phone" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit mobile number" required>
+    <label>Password (min 6 characters)</label>
+    <input type="password" name="password" minlength="6" required>
+    <label>Home address (optional, used to pre-fill bookings)</label>
+    <textarea name="address" rows="2"></textarea>
+    <button class="btn full">Sign up</button>
+    <p class="muted center">Already registered? <a href="{{ url_for('auth.customer_login') }}">Customer login</a><br>
+      Want to offer services? <a href="{{ url_for('auth.provider_register') }}">Register as provider</a></p>
+  </form>
+</div>
+{% endblock %}

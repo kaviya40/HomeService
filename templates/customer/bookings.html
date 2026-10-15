@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, empty %}
+{% block title %}My Bookings · HomeServe{% endblock %}
+{% block content %}
+<div class="page-head"><h2>My Bookings</h2><a class="btn" href="{{ url_for('customer.home') }}">+ Book a service</a></div>
+<div class="tabs">
+  <a class="{{ 'on' if not status }}" href="{{ url_for('customer.bookings') }}">All</a>
+  {% for s in ['pending','accepted','completed','rejected','cancelled'] %}
+  <a class="{{ 'on' if status == s }}" href="{{ url_for('customer.bookings', status=s) }}">{{ s | capitalize }}{% if counts.get(s) %} <span class="count">{{ counts[s] }}</span>{% endif %}</a>
+  {% endfor %}
+</div>
+{% if not items %}{{ empty('No bookings here yet.') }}{% endif %}
+<div class="grid">
+  {% for b in items %}
+  <div class="card">
+    <div class="row-between"><h3 style="margin:0">{{ b.provider_name }}</h3>{{ badge(b.status) }}</div>
+    <span class="badge">{{ b.category }}</span>
+    <p class="meta">📅 {{ b.date.strftime('%d %b %Y') }} · {{ b.time_slot }}<br>⏱ {{ b.hours }} hr · 💰 ₹{{ b.amount }}</p>
+    <a class="btn light" href="{{ url_for('customer.booking', bid=b._id) }}">View details</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stars, empty %}
+{% block title %}Find Services · HomeServe{% endblock %}
+{% block content %}
+<div class="page-head"><h2>Find a service provider</h2></div>
+<form method="get" class="card filter">
+  <div class="row" style="align-items:end">
+    <div style="flex:2"><label>Search (name / area / district)</label><input name="q" value="{{ search }}" placeholder="e.g. Kovilpatti"></div>
+    <div><label>Category</label>
+      <select name="category"><option value="">All categories</option>
+        {% for c in categories %}<option {{ 'selected' if c == cat }}>{{ c }}</option>{% endfor %}</select></div>
+    <div><label>Sort by</label>
+      <select name="sort">
+        {% for k, label in [('new','Newest'),('rating','Top rated'),('price_low','Price: low to high'),('price_high','Price: high to low')] %}
+        <option value="{{ k }}" {{ 'selected' if k == sort }}>{{ label }}</option>{% endfor %}
+      </select></div>
+    <div class="shrink"><button class="btn">Search</button></div>
+  </div>
+</form>
+
+{% if not providers %}{{ empty('No providers found. Try a different search.') }}{% endif %}
+<div class="grid">
+  {% for p in providers %}
+  {% set imgs = p.media | selectattr('type', 'equalto', 'image') | list %}
+  <div class="card provider-card">
+    {% if imgs %}<img class="thumb" src="{{ imgs[0].url }}" alt="">{% else %}<div class="thumb ph">{{ p.category[0] }}</div>{% endif %}
+    <h3><a href="{{ url_for('customer.provider_view', pid=p._id) }}">{{ p.name }}</a></h3>
+    <span class="badge">{{ p.category }}</span>
+    <p class="meta">📍 {{ p.location.area }}, {{ p.location.district }}<br>
+      💰 ₹{{ p.price_per_hour }}/hr{% if p.experience_years %} · {{ p.experience_years }} yr exp{% endif %}<br>
+      {{ stars(p.rating_avg, p.rating_count) }}</p>
+    <a class="btn" href="{{ url_for('customer.provider_view', pid=p._id) }}">View &amp; book</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

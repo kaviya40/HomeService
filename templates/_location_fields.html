@@ -1,0 +1,12 @@
+<h4>Service location</h4>
+<div class="row">
+  <div><label>State</label><input id="state" name="state" value="{{ loc.state if loc else 'Tamil Nadu' }}" required></div>
+  <div><label>District</label><input id="district" name="district" value="{{ loc.district if loc else '' }}" placeholder="e.g. Thoothukudi" required></div>
+  <div><label>Area / Town</label><input id="area" name="area" value="{{ loc.area if loc else '' }}" placeholder="e.g. Kovilpatti" required></div>
+</div>
+<button type="button" class="btn light" id="locate-btn">📍 Show on map</button>
+<p id="loc-status" class="muted" style="margin:8px 0"></p>
+<div id="map"></div>
+<small class="muted">If the location is not exact, drag the marker or click on the map to adjust it.</small>
+<input type="hidden" id="lat" name="lat" value="{{ loc.coordinates[1] if loc else '' }}">
+<input type="hidden" id="lng" name="lng" value="{{ loc.coordinates[0] if loc else '' }}">

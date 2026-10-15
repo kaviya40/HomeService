@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty %}
+{% from "provider/_cards.html" import booking_card with context %}
+{% block title %}Requests · HomeServe{% endblock %}
+{% block content %}
+<h2>Booking requests</h2>
+<div class="tabs">
+  {% for key, label, _ in tabs %}
+  <a class="{{ 'on' if tab == key }}" href="{{ url_for('provider.requests_page', tab=key) }}">{{ label }} <span class="count">{{ counts[key] }}</span></a>
+  {% endfor %}
+</div>
+<div class="grid wide">
+  {% for b in items %}{{ booking_card(b, url_for('provider.requests_page', tab=tab)) }}{% else %}{{ empty('Nothing here yet.') }}{% endfor %}
+</div>
+{% endblock %}
